@@ -7,9 +7,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
-
 import com.kanikos.game.Game;
-import com.kanikos.game.graphics.Sprite;
 
 public class Frame {
 	private static boolean initialized = false;

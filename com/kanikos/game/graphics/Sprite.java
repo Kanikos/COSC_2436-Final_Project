@@ -1,53 +1,63 @@
 package com.kanikos.game.graphics;
 
-import com.kanikos.game.level.Tile;
 import com.kanikos.game.util.Palette;
 
 public class Sprite {
-	// the width and height of the sprite in pixels
+	// sprite standard width and height
 	public static final int DIMENSIONS = 16;
 	
-	private final int[] sprite;
+	// variables determines how to transform the sprite
+	public static final byte TRANSFORMATION_MASK = 0b111;
+	public static final byte
+		FLIP_X = 0b001,
+		FLIP_Y = 0b010,
+		FLIP_D = 0b100
+	;
 	
-	public Sprite(int[] sprite) {
-		this.sprite = sprite;
-	}
 	
-	public void render(Palette palette, int[] pixels, int dimensions,  Tile tile, int xPos, int yPos) {
-		int pixel;
+	private byte[] sprite;
+	
+	public Sprite(int[] spritesheet, int spritesheetWidth, int xOffset, int yOffset) {
+		sprite = new byte[DIMENSIONS * DIMENSIONS];
 		
+		xOffset *= DIMENSIONS;
+		yOffset *= DIMENSIONS;
+		
+		int mask = 0xFF;
+		int xPos, yPos;
 		for(int y = 0; y < DIMENSIONS; y++) {
-			int yPX = tile.flipY() ? DIMENSIONS - 1 - y : y;
-			int viewportY = yPos + y;
+			yPos = y + yOffset;
 			
 			for(int x = 0; x < DIMENSIONS; x++) {
-				int xPX = tile.flipX() ? DIMENSIONS - 1 - x : x;
-				int viewportX = xPos + x;
+				xPos = x + xOffset;
 				
-				
-				if(tile.flipD()) {
-					pixel = sprite[(xPX * DIMENSIONS) + yPX];
-				}
-				else {
-					pixel = sprite [(yPX * DIMENSIONS) + xPX];
-				}
-				
-				pixel = palette.convertToColor(pixel);
-				pixels[(viewportY * dimensions) + viewportX] = pixel;
+				sprite[(y * DIMENSIONS) + x] = (byte) (spritesheet[(yPos * spritesheetWidth) + xPos] & mask);
 			}
 		}
 	}
 	
-	// overloaded methods
-	public Sprite(int color) {
-		sprite = new int[DIMENSIONS * DIMENSIONS];
+	public void render(Palette palette, int[] viewport, int viewportWidth, int xOffset, int yOffset, byte transformation) {
+		int xPos, yPos;
 		
-		for(int i = 0; i < sprite.length; i++) {
-			sprite[i] = color; 
+		for(int y = 0; y < DIMENSIONS; y++) {
+			yPos = y + yOffset;
+			
+			for(int x = 0; x < DIMENSIONS; x++) {
+				xPos = x + xOffset;
+				
+				viewport[(yPos * viewportWidth) + xPos] = palette.colorize(getPixel(x, y, transformation));
+			}
 		}
 	}
 	
-	public void render(Palette palette, int[] pixels, int dimensions, short serializedTile, int xPos, int yPos) {
-		render(palette, pixels, dimensions, new Tile(serializedTile), xPos, yPos);
+	private byte getPixel(int x, int y, byte transformation) {
+		int xPos = ((transformation & FLIP_X) == FLIP_X) ? DIMENSIONS - 1 - x : x;
+		int yPos = ((transformation & FLIP_Y) == FLIP_Y) ? DIMENSIONS - 1 - y : y;
+			
+		if((transformation & FLIP_D) == FLIP_D) {
+			return sprite[(xPos * DIMENSIONS) + yPos];
+		}
+		
+		return sprite[(yPos * DIMENSIONS) + xPos];
 	}
 }

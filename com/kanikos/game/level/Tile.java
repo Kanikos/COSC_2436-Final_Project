@@ -1,92 +1,41 @@
 package com.kanikos.game.level;
 
-import com.kanikos.game.serial.Serializer;
+import com.kanikos.game.graphics.Sprite;
+import com.kanikos.game.serial.Deserializer;
 
-/**
- * 	<p>
- * 		Explicitly stores two variables:
- * 	</p>
- * 
- * 	<ul>
- * 		<li>
- * 			sprite ID that this tile represents 
- * 		</li>
- * 	
- * 		<li>
- * 			flags that govern which properties this tile has
- * 		</li>
- * 	</ul>
- * 
- * <hr> </hr>
- * 
- * 	<p>
- * 		serialized form anatomy: 0x01_02
- * 	</p>
- * 		
- * 	<ul>
- * 		<li>
- * 			01: holds the flags
- * 		</li>
- * 
- * 		<li>
- * 			02: holds the sprite index this tile represents
- * 		</li>
- * 	</ul>
- */
-public class Tile {	
-	// flags that detail tile properties	
-	public static final short 
-		FLAG_FLIPX = (short) 0b0000001_00000000,
-		FLAG_FLIPY = (short) 0b0000010_00000000,
-		FLAG_FLIPD = (short) 0b0000100_00000000,
-		FLAG_SOLID = (short) 0b0001000_00000000
-	;
+public class Tile {
+	public static final byte FLAG_SOLID = 0b1000;
 	
+	public final byte flags, spriteID;
+	public final int x, y;
 	
-	private short serializedForm = 0;
+	public Tile(Deserializer deserializer, int x, int y) {
+		short serializedForm = deserializer.readShort();
 		
-	public Tile(short serializedForm) {
-		this.serializedForm = serializedForm;
-	}
-	
-	public void serialize(Serializer serializer) {
-		serializer.writeShort(serializedForm);
-	}
-	
-	public void setID(short spriteID) {
-		spriteID &= 0x00FF;
+		flags = (byte) ((serializedForm >> Byte.SIZE) & 0xFF);
+		spriteID = (byte) (serializedForm & 0xFF);
 		
-		serializedForm &= 0xFF00;
-		serializedForm |= spriteID;
+		this.x = x;
+		this.y = y;
 	}
 	
-	public void setFlags(short flags) {
-		flags &= 0xFF00;
-		serializedForm ^= flags;
+	public byte getSpriteID() {
+		return spriteID;
 	}
 	
-	public short getID() {
-		return (short) (serializedForm & 0xFF);
+	public byte getTransformations() {
+		return (byte) (flags & Sprite.TRANSFORMATION_MASK);
 	}
 	
-	public boolean isFlagSet(short FLAG) {
-		return (serializedForm & FLAG) == FLAG;
-	}
-	
-	// wrappers
 	public boolean isSolid() {
-		return isFlagSet(FLAG_SOLID);
+		return (flags & FLAG_SOLID) == FLAG_SOLID;
 	}
 	
-	public boolean flipX() {
-		return isFlagSet(FLAG_FLIPX);
+	public int getX() {
+		return x;
 	}
 	
-	public boolean flipY() {
-		return isFlagSet(FLAG_FLIPY);
+	public int getY() {
+		return y;
 	}
-	
-	public boolean flipD() {
-		return isFlagSet(FLAG_FLIPD);
-	}
- }
+}

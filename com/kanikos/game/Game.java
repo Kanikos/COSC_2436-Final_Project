@@ -47,6 +47,8 @@ public class Game {
 	}
 	
 	public static void main(String[] asm) {
-		new Game();
+		Spritesheet test = new Spritesheet("res/graphics/spritesheet.png");
+		
+		//new Game();
 	}
 }

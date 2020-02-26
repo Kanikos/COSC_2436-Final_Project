@@ -3,36 +3,35 @@ package com.kanikos.game.graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+import com.kanikos.game.level.Tile;
+import com.kanikos.game.util.Palette;
 
 public class Spritesheet {
-	public final Sprite[] SPRITES;
-	public final int WIDTH, HEIGHT;
+	private Sprite[] sprites;
+	private int width, height;
 	
 	public Spritesheet(String path) {
 		BufferedImage image = null;
-		
 		try {
 			image = ImageIO.read(new File(path));
-			image.flush();
-		} 
+		}
 		catch(Exception e) { e.printStackTrace(); }
 		
-		WIDTH = image.getWidth() / Sprite.DIMENSIONS;
-		HEIGHT = image.getHeight() / Sprite.DIMENSIONS;
+		// expand the 2 indexed image so each pixel takes up a complete byte
+		int[] data = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 		
-		SPRITES = new Sprite[WIDTH * HEIGHT];
+		width = image.getWidth() / Sprite.DIMENSIONS;
+		height = image.getHeight() / Sprite.DIMENSIONS;
+		sprites = new Sprite[width * height];
 		
-		for(int y = 0; y < HEIGHT; y++) {
-			int yPos = y * Sprite.DIMENSIONS;
-			
-			for(int x = 0; x < WIDTH; x++) {
-				int xPos = x * Sprite.DIMENSIONS;
-				
-				int[] spritePixels = new int[Sprite.DIMENSIONS * Sprite.DIMENSIONS];
-				image.getRGB(xPos, yPos, Sprite.DIMENSIONS, Sprite.DIMENSIONS, spritePixels, 0, Sprite.DIMENSIONS);
-				
-				SPRITES[(y * WIDTH) + x] = new Sprite(spritePixels);
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				sprites[(y * width) + x] = new Sprite(data, image.getWidth(), x, y);
 			}
 		}
+	}
+	
+	public void render(int[] viewport, int viewportWidth, Palette palette, Tile tile) {
+		sprites[tile.getSpriteID()].render(palette, viewport, viewportWidth, tile.getX(), tile.getY(), tile.getTransformations());
 	}
 }

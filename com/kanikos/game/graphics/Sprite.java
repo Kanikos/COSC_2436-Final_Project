@@ -14,7 +14,6 @@ public class Sprite {
 		FLIP_D = 0b100
 	;
 	
-	
 	private byte[] sprite;
 	
 	public Sprite(int[] spritesheet, int spritesheetWidth, int xOffset, int yOffset) {

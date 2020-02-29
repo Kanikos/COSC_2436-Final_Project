@@ -31,7 +31,7 @@ public class Spritesheet {
 		}
 	}
 	
-	public void render(int[] viewport, int viewportWidth, Palette palette, Tile tile) {
-		sprites[tile.getSpriteID()].render(palette, viewport, viewportWidth, tile.getX(), tile.getY(), tile.getTransformations());
+	public void render(Palette palette, int spriteID, int x, int y, byte transformation) {
+		sprites[spriteID].render(palette, x, y, transformation);
 	}
 }

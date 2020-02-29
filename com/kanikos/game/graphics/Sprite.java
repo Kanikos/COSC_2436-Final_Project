@@ -1,5 +1,7 @@
 package com.kanikos.game.graphics;
 
+import com.kanikos.game.Game;
+import com.kanikos.game.comp.Frame;
 import com.kanikos.game.util.Palette;
 
 public class Sprite {
@@ -35,7 +37,7 @@ public class Sprite {
 		}
 	}
 	
-	public void render(Palette palette, int[] viewport, int viewportWidth, int xOffset, int yOffset, byte transformation) {
+	public void render(Palette palette, int xOffset, int yOffset, byte transformation) {
 		int xPos, yPos;
 		
 		for(int y = 0; y < DIMENSIONS; y++) {
@@ -44,7 +46,11 @@ public class Sprite {
 			for(int x = 0; x < DIMENSIONS; x++) {
 				xPos = x + xOffset;
 				
-				viewport[(yPos * viewportWidth) + xPos] = palette.colorize(getPixel(x, y, transformation));
+				if(xPos < 0 || xPos >= Game.WIDTH_PX || yPos < 0 || yPos >= Game.HEIGHT_PX) {
+					continue;
+				}
+				
+				Frame.viewportPixels[(yPos * Game.WIDTH_PX) + xPos] = palette.colorize(getPixel(x, y, transformation));
 			}
 		}
 	}

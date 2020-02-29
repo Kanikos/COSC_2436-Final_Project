@@ -1,41 +1,49 @@
 package com.kanikos.game.level;
 
 import com.kanikos.game.graphics.Sprite;
+import com.kanikos.game.graphics.Spritesheet;
 import com.kanikos.game.serial.Deserializer;
+import com.kanikos.game.util.Palette;
 
 public class Tile {
-	public static final byte FLAG_SOLID = 0b1000;
+	private short tile;
 	
-	public final byte flags, spriteID;
-	public final int x, y;
+	public Tile(Deserializer deserializer) {
+		tile = deserializer.readShort();
+	}
 	
-	public Tile(Deserializer deserializer, int x, int y) {
-		short serializedForm = deserializer.readShort();
+	/**
+	 * @param spritesheet
+	 * 		the spritesheet to use
+	 * 
+	 * @param x
+	 * 		the tiles x position, relative to chunk, in tiles
+	 *
+	 * @param y
+	 * 		the tiles y position, relative to chunk, in tiles
+	 */
+	public void render(Spritesheet spritesheet, Palette palette, int x, int y, int xOffset, int yOffset) {
+		// tile info 
+		short id = getID();
+		byte transformation = getTransformation();
 		
-		flags = (byte) ((serializedForm >> Byte.SIZE) & 0xFF);
-		spriteID = (byte) (serializedForm & 0xFF);
+		// convert the tile x and y to pixel values one
+		x *= Sprite.DIMENSIONS;
+		y *= Sprite.DIMENSIONS;
 		
-		this.x = x;
-		this.y = y;
+		// add the offset the player adds
+		x += xOffset;
+		y += yOffset;
+		
+		// render the tile
+		spritesheet.render(palette, id, x, y, transformation);
 	}
 	
-	public byte getSpriteID() {
-		return spriteID;
+	public short getID() {
+		return (short) (tile & 0xFF);
 	}
 	
-	public byte getTransformations() {
-		return (byte) (flags & Sprite.TRANSFORMATION_MASK);
-	}
-	
-	public boolean isSolid() {
-		return (flags & FLAG_SOLID) == FLAG_SOLID;
-	}
-	
-	public int getX() {
-		return x;
-	}
-	
-	public int getY() {
-		return y;
+	public byte getTransformation() {
+		return (byte) ((tile >> Byte.SIZE) & 3);
 	}
 }

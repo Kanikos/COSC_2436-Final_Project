@@ -36,7 +36,7 @@ public class Game {
 		Player player = new Player();
 		
 		Frame.initialize();
-		Frame.frame.addKeyListener(player.keyboard);
+		Frame.canvas.addKeyListener(player.keyboard);
 		
 		long referenceTime = System.nanoTime();
 		while(running) {
@@ -45,7 +45,8 @@ public class Game {
 				player.update();
 				
 				Frame.clear();
-				chunk.render(test, player.getX(), player.getY());
+				chunk.render(test, 0, 0);
+				player.render();
 				Frame.render();
 				
 			}

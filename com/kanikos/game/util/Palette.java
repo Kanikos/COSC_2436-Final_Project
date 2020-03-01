@@ -22,6 +22,10 @@ public class Palette {
 		palette = deserializer.readInts();
 	}
 	
+	public Palette(int...colors) {
+		palette = colors;
+	}
+	
 	public int colorize(int grayScale) {
 		int index = (grayScale & MASK) / INCREMENT;
 		

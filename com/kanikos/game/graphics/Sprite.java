@@ -37,6 +37,14 @@ public class Sprite {
 		}
 	}
 	
+	public Sprite(byte color) {
+		sprite = new byte[DIMENSIONS * DIMENSIONS];
+		
+		for(int i = 0; i < DIMENSIONS * DIMENSIONS; i++) {
+			sprite[i] = color;
+		}
+	}
+	
 	public void render(Palette palette, int xOffset, int yOffset, byte transformation) {
 		int xPos, yPos;
 		

@@ -6,8 +6,11 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+
 import javax.swing.JFrame;
+
 import com.kanikos.game.Game;
+import com.kanikos.game.util.FocusManager;
 
 public class Frame {
 	private static boolean initialized = false;
@@ -25,12 +28,12 @@ public class Frame {
 		
 		frame = new JFrame(Game.TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setFocusable(true);
 		
 		Dimension d = new Dimension(Game.WIDTH_SL, Game.HEIGHT_SL);
 		
 		canvas = new Canvas();
 		canvas.setPreferredSize(d);
+		canvas.addMouseListener(new FocusManager());
 		frame.add(canvas);
 		
 		frame.pack();
